@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Group Planner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  <style>
+    body { background-color: #020817; color: #e5e7eb; }
+    .card { background-color: #020817; border-radius: 18px; border: 1px solid #111827; }
+    .form-control,
+    .form-select {
+      background-color: #020817;
+      color: #e5e7eb;
+      border-color: #374151;
+    }
+    .form-control:focus,
+    .form-select:focus {
+      box-shadow: none;
+      border-color: #38bdf8;
+    }
+    .btn-primary {
+      background-color: #38bdf8;
+      border-color: #38bdf8;
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background-color: #0ea5e9;
+      border-color: #0ea5e9;
+    }
+    .btn-outline-light {
+      border-radius: 999px;
+      border-color: #4b5563;
+      color: #e5e7eb;
+      padding: 2px 10px;
+      font-size: 0.78rem;
+    }
+    .btn-outline-light:hover {
+      background-color: #111827;
+      color: #38bdf8;
+      border-color: #38bdf8;
+    }
+    .time-slot-row { margin-bottom: 0.5rem; }
+    .table {
+      color: #e5e7eb;
+    }
+    .table thead th {
+      border-color: #111827;
+    }
+    .table tbody td {
+      border-color: #030712;
+      font-size: 0.88rem;
+    }
+    a { color: #38bdf8; text-decoration: none; }
+    a:hover { color: #0ea5e9; text-decoration: underline; }
+    .suggestion-box {
+      background-color: #020817;
+      border: 1px solid #111827;
+      border-radius: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="container py-4">
+
+  <h1 class="mb-1">Group Planner</h1>
+  <p class="text-secondary mb-4">
+    Your crew fills this in. The app finds when and what makes sense. No spreadsheets, no chaos.
+  </p>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="mb-3">
+        {% for msg in messages %}
+          <div class="alert alert-info py-2 mb-2">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="row g-4">
+
+    <!-- Left: input form -->
+    <div class="col-12 col-lg-5">
+      <div class="card p-3 h-100">
+        <h5 class="mb-3">Submit your availability</h5>
+
+        <form method="post" action="{{ url_for('submit') }}">
+
+          <div class="mb-2">
+            <label class="form-label">Your name</label>
+            <input type="text" name="name" class="form-control" required>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Date</label>
+            <input type="date" name="date" class="form-control" required>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label d-flex justify-content-between align-items-center">
+              <span>Free time ranges</span>
+              <button type="button" class="btn btn-outline-light" id="add-slot-btn">
+                + add range
+              </button>
+            </label>
+
+            <div id="slots-container">
+              <div class="row g-2 time-slot-row">
+                <div class="col-6">
+                  <input type="time" name="slot_start" class="form-control" required>
+                </div>
+                <div class="col-6">
+                  <input type="time" name="slot_end" class="form-control" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-text text-secondary">
+              Example: 18:00 - 20:00 and 21:30 - 23:00.
+            </div>
+          </div>
+
+          <!-- Event type and preferences -->
+          <div class="mb-2">
+            <label class="form-label">Preferred event type for this date</label>
+            <select name="preferred_event" id="preferred_event_select" class="form-select" required>
+              <option value="">-- Choose one --</option>
+              <option>Hiking / No map</option>
+              <option>Hiking with map</option>
+              <option>Hiking with another group</option>
+              <option>Road trip</option>
+              <option>Local Festival / Show / Theater</option>
+              <option>Other event</option>
+            </select>
+            <div class="form-text text-secondary">
+              Choose what style of day you are in the mood for.
+            </div>
+          </div>
+
+          <div class="mb-2" id="other_event_wrapper" style="display: none;">
+            <label class="form-label">If "Other event", what do you have in mind?</label>
+            <input
+              type="text"
+              id="preferred_event_custom"
+              name="preferred_event_custom"
+              class="form-control"
+              placeholder="Example: Beach day, BBQ, board games night, concert"
+            >
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Preferred location</label>
+            <input
+              type="text"
+              name="preferred_location"
+              class="form-control"
+              placeholder="Example: Troodos, Limassol, a specific village or venue"
+            >
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Specific event / idea</label>
+            <input
+              type="text"
+              name="preferred_event_detail"
+              class="form-control"
+              placeholder="Example: Artemis trail, Omodos walk, wine festival, theater show, route idea"
+            >
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Preferred time for this event</label>
+            <input
+              type="text"
+              name="preferred_time_hint"
+              class="form-control"
+              placeholder="Example: after 18:30, early morning, afternoon, sunset"
+            >
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Extra notes (optional)</label>
+            <textarea
+              name="note"
+              class="form-control"
+              rows="2"
+              placeholder="Anything else: no late night, need ride, bringing dog, etc."
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">
+            Save availability
+          </button>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- Right: overview and suggestion -->
+    <div class="col-12 col-lg-7">
+      <div class="card p-3 h-100">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Day overview and suggestion</h5>
+          <form method="get" action="{{ url_for('index') }}" class="d-flex">
+            <select name="date" class="form-select form-select-sm" onchange="this.form.submit()">
+              {% if not dates %}
+                <option value="">No dates yet</option>
+              {% endif %}
+              {% for d in dates %}
+                <option value="{{ d }}" {% if d == selected_date %}selected{% endif %}>
+                  {{ d }}
+                </option>
+              {% endfor %}
+            </select>
+          </form>
+        </div>
+
+        {% if selected_date %}
+          {% if records %}
+            <p class="mb-2 text-secondary">
+              Showing availability for <strong>{{ selected_date }}</strong>.
+            </p>
+
+            {% if suggestion %}
+              <div class="mb-3 p-3 suggestion-box">
+                <div class="text-uppercase small text-secondary mb-1">Suggested plan</div>
+                <div class="fs-5">
+                  {{ suggestion.start }} - {{ suggestion.end }}
+                </div>
+                <div class="text-secondary">
+                  Works for {{ suggestion.max_free }} of {{ suggestion.total_people }} people.
+                </div>
+                <div class="mt-1">
+                  Suggested event:
+                  <span class="badge bg-info text-dark">
+                    {{ suggestion.event }}
+                  </span>
+                </div>
+              </div>
+            {% else %}
+              <div class="alert alert-warning py-2">
+                No overlapping time that works for this group on this date.
+              </div>
+            {% endif %}
+
+            <div>
+              <h6 class="mb-2">Who is free when</h6>
+              <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Time</th>
+                      <th>Preferred event type</th>
+                      <th>Notes (location, idea, time)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for r in records %}
+                      <tr>
+                        <td>{{ r.name }}</td>
+                        <td>{{ r.start_time }} - {{ r.end_time }}</td>
+                        <td>{{ r.preferred_event }}</td>
+                        <td>{{ r.note }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          {% else %}
+            <p class="text-secondary">
+              No entries yet for {{ selected_date }}.
+            </p>
+          {% endif %}
+        {% else %}
+          <p class="text-secondary">
+            Start by submitting availability on the left. Once dates exist, pick one here to see overlaps.
+          </p>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Add more time ranges
+  document.getElementById("add-slot-btn").addEventListener("click", function () {
+    const container = document.getElementById("slots-container");
+    const row = document.createElement("div");
+    row.className = "row g-2 time-slot-row";
+    row.innerHTML = `
+      <div class="col-6">
+        <input type="time" name="slot_start" class="form-control" required>
+      </div>
+      <div class="col-6">
+        <input type="time" name="slot_end" class="form-control" required>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+
+  // Show/hide "Other event" field
+  const eventSelect = document.getElementById("preferred_event_select");
+  const otherWrapper = document.getElementById("other_event_wrapper");
+  const otherInput = document.getElementById("preferred_event_custom");
+
+  eventSelect.addEventListener("change", function () {
+    if (this.value === "Other event") {
+      otherWrapper.style.display = "block";
+    } else {
+      otherWrapper.style.display = "none";
+      otherInput.value = "";
+    }
+  });
+</script>
+
+</body>
+</html>
