@@ -471,14 +471,15 @@
     row.className = "row g-2 time-slot-row";
     row.innerHTML = `
       <div class="col-6">
-        <input type="time" name="slot_start" class="form-control" required>
+        <input type="time" name="slot_start" class="form-control time-input" required>
       </div>
       <div class="col-6 d-flex align-items-center gap-1">
-        <input type="time" name="slot_end" class="form-control" required>
+        <input type="time" name="slot_end" class="form-control time-input" required>
         <button type="button" class="remove-slot-btn" title="Remove this range">&times;</button>
       </div>
     `;
     slotsContainer.appendChild(row);
+    attachPickerHandlers(row.querySelectorAll('input[type="time"]'));
   });
 
   // Delegate remove button clicks
@@ -503,6 +504,28 @@
       otherWrapper.style.display = "none";
       otherInput.value = "";
     }
+  });
+
+  // Auto-open native pickers on click/focus for date & time inputs
+  function attachPickerHandlers(inputs) {
+    inputs.forEach(function (input) {
+      // For browsers that support showPicker()
+      function triggerPicker() {
+        if (typeof input.showPicker === "function") {
+          input.showPicker();
+        }
+      }
+      input.addEventListener("focus", triggerPicker);
+      input.addEventListener("click", triggerPicker);
+    });
+  }
+
+  // Initial attach for existing inputs
+  document.addEventListener("DOMContentLoaded", function () {
+    const dateInputs = document.querySelectorAll('input[type="date"]');
+    const timeInputs = document.querySelectorAll('input[type="time"]');
+    attachPickerHandlers(dateInputs);
+    attachPickerHandlers(timeInputs);
   });
 </script>
 
