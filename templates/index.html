@@ -21,7 +21,6 @@
   <style>
     :root {
       --bg-main: #fef9e7;
-      --bg-soft: rgba(255, 255, 255, 0.88);
       --accent: #facc15;
       --accent-deep: #eab308;
       --accent-soft: #fef08a;
@@ -45,8 +44,9 @@
       font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    .glass-card {
-      background: var(--bg-soft);
+    .glass-card,
+    .glass-soft {
+      background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       border-radius: var(--radius-xl);
@@ -55,12 +55,7 @@
     }
 
     .glass-soft {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: var(--radius-xl);
-      border: 1px solid rgba(249, 250, 251, 0.8);
-      box-shadow: var(--shadow-soft);
+      border-color: rgba(249, 250, 251, 0.9);
     }
 
     .adventure-header {
@@ -72,7 +67,7 @@
     .adventure-header i {
       font-size: 2.1rem;
       color: var(--accent-deep);
-      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
     }
 
     h1 {
@@ -86,7 +81,7 @@
       color: #78350f;
       margin-top: 4px;
       margin-bottom: 10px;
-      font-size: 1rem;
+      font-size: 0.98rem;
     }
 
     .steps {
@@ -143,7 +138,7 @@
 
     .form-control,
     .form-select {
-      background-color: rgba(255, 255, 255, 0.95);
+      background-color: rgba(255, 255, 255, 0.98);
       border-radius: var(--radius-md);
       border: 1px solid rgba(250, 204, 21, 0.9);
       color: var(--text-main);
@@ -200,9 +195,48 @@
       background-color: #fef9c3;
       border-color: #fde047;
       color: #78350f;
-      border-radius: var(--radius-md);
+      border-radius: 14px;
     }
 
+    /* Event choice pills */
+    .event-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .event-pill {
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      border: 1px solid rgba(250, 204, 21, 0.7);
+      background-color: #fffbeb;
+      color: #92400e;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .event-pill i {
+      font-size: 0.9rem;
+    }
+
+    .event-pill.selected {
+      background: linear-gradient(to right, var(--accent), var(--accent-deep));
+      color: #111827;
+      box-shadow: 0 5px 12px rgba(250, 204, 21, 0.5);
+      border-color: transparent;
+    }
+
+    .event-pill:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(250, 204, 21, 0.35);
+    }
+
+    /* Suggestion area */
     .suggestion-box {
       background: linear-gradient(to bottom, #fffdf5, #fff7d6);
       border-radius: var(--radius-xl);
@@ -242,7 +276,7 @@
 
     /* Person cards */
     .person-card {
-      border-radius: var(--radius-md);
+      border-radius: 16px;
       padding: 8px 10px;
       margin-bottom: 6px;
       background: rgba(255, 255, 255, 0.98);
@@ -256,7 +290,6 @@
       gap: 2px 8px;
       font-size: 0.8rem;
       transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
-      cursor: default;
     }
 
     .person-card:hover {
@@ -298,6 +331,11 @@
       color: #6b7280;
     }
 
+    /* Time slot remove */
+    .time-slot-row {
+      margin-bottom: 4px;
+    }
+
     .remove-slot-btn {
       border: none;
       background: transparent;
@@ -314,6 +352,34 @@
       transform: scale(1.08);
     }
 
+    /* Advanced section toggle */
+    .advanced-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      cursor: pointer;
+      margin-top: 6px;
+      user-select: none;
+    }
+
+    .advanced-toggle i {
+      font-size: 0.88rem;
+      transition: transform var(--transition-fast);
+    }
+
+    .advanced-toggle.open i {
+      transform: rotate(90deg);
+    }
+
+    #advanced_section {
+      display: none;
+      margin-top: 6px;
+      padding-top: 4px;
+      border-top: 1px solid rgba(250, 204, 21, 0.2);
+    }
+
     footer {
       margin-top: 18px;
       text-align: center;
@@ -327,15 +393,9 @@
       gap: 4px;
       padding: 4px 10px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.96);
       border: 1px solid rgba(250, 204, 21, 0.5);
       box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-    }
-
-    @media (max-width: 991px) {
-      .glass-card, .glass-soft {
-        border-radius: 18px;
-      }
     }
   </style>
 </head>
@@ -343,19 +403,17 @@
 <body>
 <div class="container py-4">
 
-  <!-- Header + steps -->
   <div class="adventure-header">
     <i class="bi bi-compass-fill"></i>
     <h1>Group Planner</h1>
   </div>
   <p class="subtitle">
-    Help the party lock in the next quest in under 30 seconds.
+    Tap a few things, we do the thinking. No spreadsheets, no drama.
   </p>
   <div class="steps">
     <div class="step-pill"><span>1</span><span>Pick the day.</span></div>
     <div class="step-pill"><span>2</span><span>Drop your free time.</span></div>
-    <div class="step-pill"><span>3</span><span>Choose the adventure.</span></div>
-    <div class="step-pill"><span>4</span><span>Tap save. Done.</span></div>
+    <div class="step-pill"><span>3</span><span>Tap your vibe.</span></div>
   </div>
 
   {% with messages = get_flashed_messages() %}
@@ -370,27 +428,30 @@
 
   <div class="row g-4">
 
-    <!-- Left: form -->
+    <!-- LEFT: Simple form -->
     <div class="col-12 col-lg-5">
       <div class="glass-card p-3 h-100">
         <div class="section-label">Your move</div>
-        <h5 class="mb-3 fw-semibold">Tell us when you can join</h5>
+        <h5 class="mb-3 fw-semibold">30-second check-in</h5>
 
         <form method="post" action="{{ url_for('submit') }}">
 
+          <!-- Name -->
           <div class="mb-2">
             <label class="form-label">Your name</label>
             <input type="text" name="name" class="form-control"
-                   placeholder="So we know which hero you are"
+                   placeholder="Who is this legend?"
                    required>
           </div>
 
+          <!-- Date -->
           <div class="mb-2">
             <label class="form-label">Date</label>
             <input type="date" name="date" class="form-control date-input" required>
-            <div class="small-hint">Pick the day for this adventure.</div>
+            <div class="small-hint">Pick the day for this plan.</div>
           </div>
 
+          <!-- Time ranges (minimal) -->
           <div class="mb-2">
             <label class="form-label d-flex justify-content-between align-items-center">
               <span>Free time ranges</span>
@@ -400,7 +461,6 @@
             </label>
 
             <div id="slots-container">
-              <!-- initial row (no remove) -->
               <div class="row g-2 time-slot-row">
                 <div class="col-6">
                   <input type="time" name="slot_start" class="form-control time-input" required>
@@ -412,94 +472,123 @@
             </div>
 
             <div class="small-hint">
-              Example: 09:00 - 14:00 or 18:30 - 23:00. Add more blocks if needed.
+              Rough window is enough. Add more blocks if needed.
             </div>
           </div>
 
-          <!-- Event preferences -->
+          <!-- Event type as pills -->
           <div class="mb-2">
-            <label class="form-label">Preferred event type</label>
-            <select name="preferred_event" id="preferred_event_select" class="form-select" required>
-              <option value="">Choose one</option>
-              <option>Hiking / No map</option>
-              <option>Hiking with map</option>
-              <option>Hiking with another group</option>
-              <option>Road trip</option>
-              <option>Local Festival / Show / Theater</option>
-              <option>Other event</option>
-            </select>
-            <div class="small-hint">Pick what you would actually enjoy for that day.</div>
+            <label class="form-label">Pick your adventure</label>
+
+            <!-- Hidden field actually submitted; backend still works -->
+            <input type="hidden" name="preferred_event" id="preferred_event_input">
+
+            <div class="event-options" id="event_options">
+              <div class="event-pill" data-value="Hiking / No map">
+                <i class="bi bi-signpost-split"></i> No map hike
+              </div>
+              <div class="event-pill" data-value="Hiking with map">
+                <i class="bi bi-map"></i> Hike with map
+              </div>
+              <div class="event-pill" data-value="Hiking with another group">
+                <i class="bi bi-people"></i> Join another group
+              </div>
+              <div class="event-pill" data-value="Road trip">
+                <i class="bi bi-car-front"></i> Road trip
+              </div>
+              <div class="event-pill" data-value="Local Festival / Show / Theater">
+                <i class="bi bi-music-note-beamed"></i> Festival / Show
+              </div>
+              <div class="event-pill" data-value="Other event">
+                <i class="bi bi-stars"></i> Other idea
+              </div>
+            </div>
+
+            <div class="small-hint">
+              One tap. You can change it by tapping another.
+            </div>
           </div>
 
+          <!-- Other event extra input -->
           <div class="mb-2" id="other_event_wrapper" style="display: none;">
-            <label class="form-label">If "Other event", what is the idea?</label>
             <input
               type="text"
               id="preferred_event_custom"
               name="preferred_event_custom"
               class="form-control"
-              placeholder="Beach day, BBQ, board games night, concert..."
+              placeholder="Tell us your wild idea (optional)"
             >
           </div>
 
-          <div class="mb-2">
-            <label class="form-label">Preferred location</label>
-            <input
-              type="text"
-              name="preferred_location"
-              class="form-control"
-              placeholder="Troodos, Limassol, Nicosia, village, venue..."
-            >
+          <!-- Advanced optional details -->
+          <div class="advanced-toggle" id="advanced_toggle">
+            <i class="bi bi-chevron-right"></i>
+            <span>Add details (optional)</span>
           </div>
 
-          <div class="mb-2">
-            <label class="form-label">Specific event or idea</label>
-            <input
-              type="text"
-              name="preferred_event_detail"
-              class="form-control"
-              placeholder="Trail name, festival, theater show, route idea..."
-            >
+          <div id="advanced_section">
+            <div class="mb-2">
+              <label class="form-label">Preferred location</label>
+              <input
+                type="text"
+                name="preferred_location"
+                class="form-control"
+                placeholder="Area, town, or spot (optional)"
+              >
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label">Specific event / idea</label>
+              <input
+                type="text"
+                name="preferred_event_detail"
+                class="form-control"
+                placeholder="Trail, festival, route, etc."
+              >
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label">Preferred time feeling</label>
+              <input
+                type="text"
+                name="preferred_time_hint"
+                class="form-control"
+                placeholder="Early, after work, sunset, any time..."
+              >
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label">Extra notes</label>
+              <textarea
+                name="note"
+                class="form-control"
+                rows="2"
+                placeholder="Need ride, no late night, dog friendly, etc."
+              ></textarea>
+            </div>
           </div>
 
-          <div class="mb-2">
-            <label class="form-label">Preferred time feeling</label>
-            <input
-              type="text"
-              name="preferred_time_hint"
-              class="form-control"
-              placeholder="Early, after work, sunset, any time..."
-            >
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Extra notes (optional)</label>
-            <textarea
-              name="note"
-              class="form-control"
-              rows="2"
-              placeholder="No late night, need ride, slow pace, bring dog, etc."
-            ></textarea>
-          </div>
-
-          <button type="submit" class="btn btn-primary w-100">
-            Save availability and claim your spot ⭐
-          </button>
-          <div class="small-hint mt-1">
-            Fast taps = faster plans for everyone.
+          <!-- Submit -->
+          <div class="mt-3">
+            <button type="submit" class="btn btn-primary w-100">
+              Save and join the quest ⭐
+            </button>
+            <div class="small-hint mt-1">
+              Only the yellow bits matter. Rest is bonus.
+            </div>
           </div>
 
         </form>
       </div>
     </div>
 
-    <!-- Right: overview -->
+    <!-- RIGHT: Overview -->
     <div class="col-12 col-lg-7">
       <div class="glass-soft p-3 h-100">
 
         <div class="section-label">Party status</div>
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="mb-0 fw-semibold">Day overview and suggested quest</h5>
+          <h5 class="mb-0 fw-semibold">Day overview & suggested quest</h5>
           <form method="get" action="{{ url_for('index') }}" class="d-flex">
             <select name="date" class="form-select form-select-sm" onchange="this.form.submit()">
               {% if not dates %}
@@ -522,9 +611,7 @@
 
             {% if suggestion %}
               <div class="suggestion-box">
-                <div class="suggestion-title mb-1">
-                  Suggested plan
-                </div>
+                <div class="suggestion-title mb-1">Suggested plan</div>
                 <div class="suggestion-time">
                   {{ suggestion.start }} - {{ suggestion.end }}
                 </div>
@@ -538,22 +625,19 @@
               </div>
             {% else %}
               <div class="alert alert-warning py-2 mb-3">
-                No strong overlap yet. Gently annoy the others to fill this in.
+                No strong overlap yet. Politely roast the others until they tap in.
               </div>
             {% endif %}
 
             <div>
               <h6 class="mb-2">Who is free when</h6>
-
               {% for r in records %}
                 <div class="person-card">
                   <div class="person-name">
-                    <i class="bi bi-person-fill"></i>
-                    {{ r.name }}
+                    <i class="bi bi-person-fill"></i>{{ r.name }}
                   </div>
                   <div class="person-time">
-                    <i class="bi bi-clock"></i>
-                    {{ r.start_time }} - {{ r.end_time }}
+                    <i class="bi bi-clock"></i>{{ r.start_time }} - {{ r.end_time }}
                   </div>
                   <div class="person-meta">
                     <span class="badge-event">{{ r.preferred_event }}</span>
@@ -572,7 +656,7 @@
           {% endif %}
         {% else %}
           <p class="small-hint mb-0">
-            Start by submitting availability on the left. Then pick a date here to see overlaps and the best quest window.
+            Start by filling the left card. Once a date has entries, select it here to see overlaps.
           </p>
         {% endif %}
 
@@ -610,7 +694,7 @@
     attachPickerHandlers(row.querySelectorAll('input[type="time"]'));
   });
 
-  // Delegate remove button clicks (keep at least one row)
+  // Remove extra time ranges (keep at least one)
   slotsContainer.addEventListener("click", function (e) {
     if (e.target.classList.contains("remove-slot-btn")) {
       const rows = slotsContainer.querySelectorAll(".time-slot-row");
@@ -620,13 +704,24 @@
     }
   });
 
-  // Show/hide "Other event" custom input
-  const eventSelect = document.getElementById("preferred_event_select");
+  // Event pills -> preferred_event
+  const eventOptions = document.getElementById("event_options");
+  const preferredEventInput = document.getElementById("preferred_event_input");
   const otherWrapper = document.getElementById("other_event_wrapper");
   const otherInput = document.getElementById("preferred_event_custom");
 
-  eventSelect.addEventListener("change", function () {
-    if (this.value === "Other event") {
+  eventOptions.addEventListener("click", function (e) {
+    const pill = e.target.closest(".event-pill");
+    if (!pill) return;
+
+    // Toggle selection
+    document.querySelectorAll(".event-pill").forEach(p => p.classList.remove("selected"));
+    pill.classList.add("selected");
+
+    const value = pill.getAttribute("data-value") || "";
+    preferredEventInput.value = value;
+
+    if (value === "Other event") {
       otherWrapper.style.display = "block";
     } else {
       otherWrapper.style.display = "none";
@@ -634,7 +729,17 @@
     }
   });
 
-  // Attach native picker auto-open behavior
+  // Advanced toggle
+  const advToggle = document.getElementById("advanced_toggle");
+  const advSection = document.getElementById("advanced_section");
+
+  advToggle.addEventListener("click", function () {
+    const open = advSection.style.display === "block";
+    advSection.style.display = open ? "none" : "block";
+    advToggle.classList.toggle("open", !open);
+  });
+
+  // Auto-open native pickers on focus/click (where supported)
   function attachPickerHandlers(inputs) {
     inputs.forEach(function (input) {
       function triggerPicker() {
