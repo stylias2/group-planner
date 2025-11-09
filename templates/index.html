@@ -36,6 +36,9 @@
       border-color: #facc15;
       color: #111;
     }
+    .form-control::placeholder {
+      color: #9ca3af;
+    }
     .form-control:focus,
     .form-select:focus {
       border-color: #eab308;
@@ -45,7 +48,8 @@
       background-color: #facc15;
       border-color: #eab308;
       color: #222;
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 1.02rem;
     }
     .btn-primary:hover {
       background-color: #eab308;
@@ -78,9 +82,25 @@
     }
     .subtitle {
       color: #78350f;
-      font-style: italic;
+      margin-bottom: 0.4rem;
+      font-size: 1.02rem;
+    }
+    .steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
       margin-bottom: 1.2rem;
-      font-size: 1.05rem;
+      font-size: 0.9rem;
+      color: #92400e;
+    }
+    .step-pill {
+      background-color: #fef9c3;
+      border-radius: 999px;
+      padding: 4px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #fde047;
     }
     .alert-info {
       background-color: #fef9c3;
@@ -96,6 +116,17 @@
       font-size: 1.8rem;
       color: #ca8a04;
     }
+    .section-label {
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #9ca3af;
+      margin-bottom: 2px;
+    }
+    .small-hint {
+      font-size: 0.78rem;
+      color: #9ca3af;
+    }
   </style>
 </head>
 
@@ -107,8 +138,14 @@
     <h1 class="mb-0">Group Planner</h1>
   </div>
   <p class="subtitle">
-    🧭 Hello fellow adventurers! Let's plan our next quest — no confusion, just golden memories waiting to happen.
+    Hello fellow adventurers! Help the party pick the next quest in under 30 seconds.
   </p>
+  <div class="steps">
+    <div class="step-pill"><span>1</span><span>Pick the day you are free.</span></div>
+    <div class="step-pill"><span>2</span><span>Add your free time.</span></div>
+    <div class="step-pill"><span>3</span><span>Choose the adventure.</span></div>
+    <div class="step-pill"><span>4</span><span>Click Save. You are a hero.</span></div>
+  </div>
 
   {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -125,18 +162,22 @@
     <!-- Left: input form -->
     <div class="col-12 col-lg-5">
       <div class="card p-3 h-100">
-        <h5 class="mb-3">Submit your availability</h5>
+        <div class="section-label">Your move</div>
+        <h5 class="mb-3">Tell us when you can join</h5>
 
         <form method="post" action="{{ url_for('submit') }}">
 
           <div class="mb-2">
             <label class="form-label">Your name</label>
-            <input type="text" name="name" class="form-control" required>
+            <input type="text" name="name" class="form-control"
+                   placeholder="So we know which hero you are"
+                   required>
           </div>
 
           <div class="mb-2">
             <label class="form-label">Date</label>
             <input type="date" name="date" class="form-control" required>
+            <div class="small-hint">Pick the day for this plan.</div>
           </div>
 
           <div class="mb-2">
@@ -158,16 +199,16 @@
               </div>
             </div>
 
-            <div class="form-text text-secondary">
-              Example: 18:00 - 20:00 and 21:30 - 23:00.
+            <div class="small-hint">
+              Example: 09:00 - 14:00 or 18:30 - 23:00. Add more blocks if needed.
             </div>
           </div>
 
           <!-- Event type and preferences -->
           <div class="mb-2">
-            <label class="form-label">Preferred event type for this date</label>
+            <label class="form-label">Preferred event type</label>
             <select name="preferred_event" id="preferred_event_select" class="form-select" required>
-              <option value="">-- Choose one --</option>
+              <option value="">Choose one</option>
               <option>Hiking / No map</option>
               <option>Hiking with map</option>
               <option>Hiking with another group</option>
@@ -175,19 +216,19 @@
               <option>Local Festival / Show / Theater</option>
               <option>Other event</option>
             </select>
-            <div class="form-text text-secondary">
-              Choose what kind of adventure calls your name.
+            <div class="small-hint">
+              Go with your vibe. This is what you would enjoy for that day.
             </div>
           </div>
 
           <div class="mb-2" id="other_event_wrapper" style="display: none;">
-            <label class="form-label">If "Other event", what do you have in mind?</label>
+            <label class="form-label">If "Other event", what is the idea?</label>
             <input
               type="text"
               id="preferred_event_custom"
               name="preferred_event_custom"
               class="form-control"
-              placeholder="Example: Beach day, BBQ, board games night, concert"
+              placeholder="Beach day, BBQ, board games night, concert, anything fun"
             >
           </div>
 
@@ -197,27 +238,27 @@
               type="text"
               name="preferred_location"
               class="form-control"
-              placeholder="Example: Troodos, Limassol, a specific village or venue"
+              placeholder="Troodos, Limassol, Nicosia, specific village, venue, etc."
             >
           </div>
 
           <div class="mb-2">
-            <label class="form-label">Specific event / idea</label>
+            <label class="form-label">Specific event or idea</label>
             <input
               type="text"
               name="preferred_event_detail"
               class="form-control"
-              placeholder="Example: Artemis trail, Omodos walk, wine festival, theater show, route idea"
+              placeholder="Trail name, festival name, theater show, route idea"
             >
           </div>
 
           <div class="mb-2">
-            <label class="form-label">Preferred time for this event</label>
+            <label class="form-label">Preferred time feeling</label>
             <input
               type="text"
               name="preferred_time_hint"
               class="form-control"
-              placeholder="Example: after 18:30, early morning, afternoon, sunset"
+              placeholder="Early, after work, sunset, any time, etc."
             >
           </div>
 
@@ -227,13 +268,16 @@
               name="note"
               class="form-control"
               rows="2"
-              placeholder="Anything else: no late night, need ride, bringing dog, etc."
+              placeholder="No late night, need a ride, bringing dog, slow pace, etc."
             ></textarea>
           </div>
 
           <button type="submit" class="btn btn-primary w-100">
-            Save availability
+            Save availability and claim your spot ⭐
           </button>
+          <div class="small-hint mt-1">
+            Fast clicks mean better plans for everyone.
+          </div>
 
         </form>
       </div>
@@ -243,8 +287,9 @@
     <div class="col-12 col-lg-7">
       <div class="card p-3 h-100">
 
+        <div class="section-label">Party status</div>
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="mb-0">Day overview and suggestion</h5>
+          <h5 class="mb-0">Day overview and suggested quest</h5>
           <form method="get" action="{{ url_for('index') }}" class="d-flex">
             <select name="date" class="form-select form-select-sm" onchange="this.form.submit()">
               {% if not dates %}
@@ -261,20 +306,20 @@
 
         {% if selected_date %}
           {% if records %}
-            <p class="mb-2 text-secondary">
+            <p class="mb-2 small-hint">
               Showing availability for <strong>{{ selected_date }}</strong>.
             </p>
 
             {% if suggestion %}
-              <div class="mb-3 p-3 suggestion-box">
-                <div class="text-uppercase small text-secondary mb-1">Suggested plan</div>
-                <div class="fs-5">
+              <div class="mb-3 suggestion-box">
+                <div class="text-uppercase small-hint mb-1">Suggested plan</div>
+                <div class="fs-5 fw-semibold">
                   {{ suggestion.start }} - {{ suggestion.end }}
                 </div>
-                <div class="text-secondary">
-                  Works for {{ suggestion.max_free }} of {{ suggestion.total_people }} people.
+                <div class="small-hint mb-1">
+                  Works for {{ suggestion.max_free }} of {{ suggestion.total_people }} heroes.
                 </div>
-                <div class="mt-1">
+                <div>
                   Suggested event:
                   <span class="badge bg-warning text-dark">
                     {{ suggestion.event }}
@@ -283,7 +328,7 @@
               </div>
             {% else %}
               <div class="alert alert-warning py-2">
-                No overlapping time that works for this group on this date.
+                No strong overlap yet. Harass your friends to fill the form.
               </div>
             {% endif %}
 
@@ -314,13 +359,13 @@
             </div>
 
           {% else %}
-            <p class="text-secondary">
-              No entries yet for {{ selected_date }}.
+            <p class="small-hint">
+              Nobody has marked this day yet. First one to fill it gets moral superiority.
             </p>
           {% endif %}
         {% else %}
-          <p class="text-secondary">
-            Start by submitting availability on the left. Once dates exist, pick one here to see overlaps.
+          <p class="small-hint">
+            Start by submitting availability on the left. Once dates exist, choose one here to see the group's best quest window.
           </p>
         {% endif %}
 
@@ -347,7 +392,7 @@
     container.appendChild(row);
   });
 
-  // Show/hide "Other event" field
+  // Show or hide "Other event" field
   const eventSelect = document.getElementById("preferred_event_select");
   const otherWrapper = document.getElementById("other_event_wrapper");
   const otherInput = document.getElementById("preferred_event_custom");
