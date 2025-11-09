@@ -24,26 +24,31 @@
       color: #222;
       font-family: "Inter", "Segoe UI", sans-serif;
     }
+
     .card {
       background-color: #ffffffd9;
       border-radius: 18px;
       border: 2px solid #fde047;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
     }
+
     .form-control,
     .form-select {
       background-color: #fff;
       border-color: #facc15;
       color: #111;
     }
+
     .form-control::placeholder {
       color: #9ca3af;
     }
+
     .form-control:focus,
     .form-select:focus {
       border-color: #eab308;
       box-shadow: 0 0 0 3px rgba(234,179,8,0.3);
     }
+
     .btn-primary {
       background-color: #facc15;
       border-color: #eab308;
@@ -51,40 +56,54 @@
       font-weight: 700;
       font-size: 1.02rem;
     }
+
     .btn-primary:hover {
       background-color: #eab308;
       border-color: #ca8a04;
       color: #111;
     }
+
     .btn-outline-light {
       border-color: #eab308;
       color: #222;
       background-color: #fffbea;
     }
+
     .btn-outline-light:hover {
       background-color: #fef08a;
       color: #111;
       border-color: #ca8a04;
     }
-    .table {
-      color: #222;
+
+    .alert-info {
+      background-color: #fef9c3;
+      border-color: #fde047;
+      color: #78350f;
     }
-    .suggestion-box {
-      background-color: #fff8dc;
-      border: 2px dashed #facc15;
-      border-radius: 16px;
-      padding: 1rem;
+
+    .adventure-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
+
+    .adventure-header i {
+      font-size: 1.8rem;
+      color: #ca8a04;
+    }
+
     h1 {
       color: #ca8a04;
       font-weight: 800;
       letter-spacing: -0.02em;
     }
+
     .subtitle {
       color: #78350f;
       margin-bottom: 0.4rem;
       font-size: 1.02rem;
     }
+
     .steps {
       display: flex;
       flex-wrap: wrap;
@@ -93,6 +112,7 @@
       font-size: 0.9rem;
       color: #92400e;
     }
+
     .step-pill {
       background-color: #fef9c3;
       border-radius: 999px;
@@ -102,20 +122,7 @@
       gap: 6px;
       border: 1px solid #fde047;
     }
-    .alert-info {
-      background-color: #fef9c3;
-      border-color: #fde047;
-      color: #78350f;
-    }
-    .adventure-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .adventure-header i {
-      font-size: 1.8rem;
-      color: #ca8a04;
-    }
+
     .section-label {
       font-size: 0.78rem;
       letter-spacing: 0.12em;
@@ -123,9 +130,84 @@
       color: #9ca3af;
       margin-bottom: 2px;
     }
+
     .small-hint {
       font-size: 0.78rem;
       color: #9ca3af;
+    }
+
+    .suggestion-box {
+      background-color: #fff8dc;
+      border: 2px dashed #facc15;
+      border-radius: 16px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Time slot rows */
+    .time-slot-row {
+      margin-bottom: 4px;
+    }
+
+    .remove-slot-btn {
+      border: none;
+      background: transparent;
+      color: #dc2626;
+      font-size: 1rem;
+      padding: 0 4px;
+      cursor: pointer;
+    }
+
+    .remove-slot-btn:hover {
+      color: #b91c1c;
+    }
+
+    /* Person cards on the right */
+    .person-card {
+      border-radius: 14px;
+      border: 1px solid #fee58a;
+      background-color: #fffbeb;
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 0.85rem;
+    }
+
+    .person-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .person-name {
+      font-weight: 700;
+      color: #92400e;
+    }
+
+    .person-time {
+      font-weight: 500;
+      color: #374151;
+      font-size: 0.8rem;
+    }
+
+    .person-event {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.78rem;
+      color: #92400e;
+    }
+
+    .person-event span.badge {
+      font-size: 0.7rem;
+    }
+
+    .person-notes {
+      color: #6b7280;
+      font-size: 0.78rem;
     }
   </style>
 </head>
@@ -141,10 +223,10 @@
     Hello fellow adventurers! Help the party pick the next quest in under 30 seconds.
   </p>
   <div class="steps">
-    <div class="step-pill"><span>1</span><span>Pick the day you are free.</span></div>
+    <div class="step-pill"><span>1</span><span>Pick the day.</span></div>
     <div class="step-pill"><span>2</span><span>Add your free time.</span></div>
     <div class="step-pill"><span>3</span><span>Choose the adventure.</span></div>
-    <div class="step-pill"><span>4</span><span>Click Save. You are a hero.</span></div>
+    <div class="step-pill"><span>4</span><span>Hit save and flex.</span></div>
   </div>
 
   {% with messages = get_flashed_messages() %}
@@ -180,6 +262,7 @@
             <div class="small-hint">Pick the day for this plan.</div>
           </div>
 
+          <!-- Time ranges with removable rows -->
           <div class="mb-2">
             <label class="form-label d-flex justify-content-between align-items-center">
               <span>Free time ranges</span>
@@ -189,11 +272,12 @@
             </label>
 
             <div id="slots-container">
+              <!-- Initial row (no remove button so at least one always stays) -->
               <div class="row g-2 time-slot-row">
                 <div class="col-6">
                   <input type="time" name="slot_start" class="form-control" required>
                 </div>
-                <div class="col-6">
+                <div class="col-6 d-flex align-items-center gap-1">
                   <input type="time" name="slot_end" class="form-control" required>
                 </div>
               </div>
@@ -217,7 +301,7 @@
               <option>Other event</option>
             </select>
             <div class="small-hint">
-              Go with your vibe. This is what you would enjoy for that day.
+              Pick what you would be happy to do that day.
             </div>
           </div>
 
@@ -238,7 +322,7 @@
               type="text"
               name="preferred_location"
               class="form-control"
-              placeholder="Troodos, Limassol, Nicosia, specific village, venue, etc."
+              placeholder="Troodos, Limassol, Nicosia, specific village or venue"
             >
           </div>
 
@@ -248,7 +332,7 @@
               type="text"
               name="preferred_event_detail"
               class="form-control"
-              placeholder="Trail name, festival name, theater show, route idea"
+              placeholder="Trail name, festival, theater show, route idea"
             >
           </div>
 
@@ -258,7 +342,7 @@
               type="text"
               name="preferred_time_hint"
               class="form-control"
-              placeholder="Early, after work, sunset, any time, etc."
+              placeholder="Early, after work, sunset, any time"
             >
           </div>
 
@@ -268,7 +352,7 @@
               name="note"
               class="form-control"
               rows="2"
-              placeholder="No late night, need a ride, bringing dog, slow pace, etc."
+              placeholder="No late night, need ride, slow pace, bring dog, etc."
             ></textarea>
           </div>
 
@@ -276,7 +360,7 @@
             Save availability and claim your spot ⭐
           </button>
           <div class="small-hint mt-1">
-            Fast clicks mean better plans for everyone.
+            Two taps and you are done. No excuses.
           </div>
 
         </form>
@@ -311,7 +395,7 @@
             </p>
 
             {% if suggestion %}
-              <div class="mb-3 suggestion-box">
+              <div class="suggestion-box">
                 <div class="text-uppercase small-hint mb-1">Suggested plan</div>
                 <div class="fs-5 fw-semibold">
                   {{ suggestion.start }} - {{ suggestion.end }}
@@ -328,39 +412,41 @@
               </div>
             {% else %}
               <div class="alert alert-warning py-2">
-                No strong overlap yet. Harass your friends to fill the form.
+                No strong overlap yet. Kindly bully the rest of the party to fill this in.
               </div>
             {% endif %}
 
             <div>
               <h6 class="mb-2">Who is free when</h6>
-              <div class="table-responsive">
-                <table class="table table-sm align-middle">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Time</th>
-                      <th>Preferred event type</th>
-                      <th>Notes (location, idea, time)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for r in records %}
-                      <tr>
-                        <td>{{ r.name }}</td>
-                        <td>{{ r.start_time }} - {{ r.end_time }}</td>
-                        <td>{{ r.preferred_event }}</td>
-                        <td>{{ r.note }}</td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+
+              <!-- Person cards instead of dense table -->
+              {% for r in records %}
+                <div class="person-card">
+                  <div class="person-header">
+                    <div class="person-name">
+                      {{ r.name }}
+                    </div>
+                    <div class="person-time">
+                      {{ r.start_time }} - {{ r.end_time }}
+                    </div>
+                  </div>
+                  <div class="person-event">
+                    <span class="badge bg-warning text-dark">
+                      {{ r.preferred_event }}
+                    </span>
+                  </div>
+                  {% if r.note %}
+                    <div class="person-notes">
+                      {{ r.note }}
+                    </div>
+                  {% endif %}
+                </div>
+              {% endfor %}
             </div>
 
           {% else %}
             <p class="small-hint">
-              Nobody has marked this day yet. First one to fill it gets moral superiority.
+              Nobody has marked this day yet. First one to submit earns unofficial party leader status.
             </p>
           {% endif %}
         {% else %}
@@ -376,20 +462,33 @@
 </div>
 
 <script>
-  // Add more time ranges
-  document.getElementById("add-slot-btn").addEventListener("click", function () {
-    const container = document.getElementById("slots-container");
+  // Add more time ranges with removable rows
+  const slotsContainer = document.getElementById("slots-container");
+  const addSlotBtn = document.getElementById("add-slot-btn");
+
+  addSlotBtn.addEventListener("click", function () {
     const row = document.createElement("div");
     row.className = "row g-2 time-slot-row";
     row.innerHTML = `
       <div class="col-6">
         <input type="time" name="slot_start" class="form-control" required>
       </div>
-      <div class="col-6">
+      <div class="col-6 d-flex align-items-center gap-1">
         <input type="time" name="slot_end" class="form-control" required>
+        <button type="button" class="remove-slot-btn" title="Remove this range">&times;</button>
       </div>
     `;
-    container.appendChild(row);
+    slotsContainer.appendChild(row);
+  });
+
+  // Delegate remove button clicks
+  slotsContainer.addEventListener("click", function (e) {
+    if (e.target.classList.contains("remove-slot-btn")) {
+      const rows = slotsContainer.querySelectorAll(".time-slot-row");
+      if (rows.length > 1) {
+        e.target.closest(".time-slot-row").remove();
+      }
+    }
   });
 
   // Show or hide "Other event" field
